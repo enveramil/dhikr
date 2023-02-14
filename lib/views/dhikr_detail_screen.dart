@@ -4,11 +4,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../db_handler.dart';
 import '../model.dart';
 
-class DhikrDetailScreen extends StatefulWidget {
+class DhikrDetailScreenArguments{
   DhikrModel dhikrModel;
   int count;
+  DhikrDetailScreenArguments(this.dhikrModel,this.count);
+}
 
-  DhikrDetailScreen({super.key, required this.dhikrModel, required this.count});
+class DhikrDetailScreen extends StatefulWidget {
+  DhikrDetailScreenArguments args;
+
+  DhikrDetailScreen({super.key, required this.args});
 
   @override
   State<DhikrDetailScreen> createState() => _DhikrDetailScreenState();
@@ -32,7 +37,7 @@ class _DhikrDetailScreenState extends State<DhikrDetailScreen>
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(widget.dhikrModel.dhikrName ?? ""),
+          title: Text(widget.args.dhikrModel.dhikrName ?? ""),
           centerTitle: true,
           automaticallyImplyLeading: false,
           leading: IconButton(
@@ -68,10 +73,10 @@ class _DhikrDetailScreenState extends State<DhikrDetailScreen>
           child: Center(
             child: GestureDetector(
               onTap: () async {
-                int count = --widget.count;
-                if (widget.count >= 0) {
+                int count = --widget.args.count;
+                if (widget.args.count >= 0) {
                   setState(() {});
-                  await dbHelper.update(widget.dhikrModel.id ?? 0, count);
+                  await dbHelper.update(widget.args.dhikrModel.id ?? 0, count);
                 }
               },
               child: Container(
@@ -86,7 +91,7 @@ class _DhikrDetailScreenState extends State<DhikrDetailScreen>
                 child: Center(
                   child: Center(
                     child: Text(
-                      "${widget.count}",
+                      "${widget.args.count}",
                       style: const TextStyle(fontSize: 30),
                     ),
                   ),

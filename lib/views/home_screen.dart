@@ -32,45 +32,41 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: Container(
-          height: double.infinity,
-          decoration: const BoxDecoration(
-              gradient: LinearGradient(
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
-            colors: [
-              Colors.blue,
-              Colors.red,
+    return Scaffold(
+      body: Container(
+        height: double.infinity,
+        decoration: const BoxDecoration(
+            gradient: LinearGradient(
+          begin: Alignment.topRight,
+          end: Alignment.bottomLeft,
+          colors: [
+            Colors.blue,
+            Colors.red,
+          ],
+        )),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              if (arrList.isNotEmpty) _buildBody(),
+              _buildBody2(),
             ],
-          )),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                if(arrList.isNotEmpty)
-                _buildBody(),
-                _buildBody2(),
-              ],
-            ),
           ),
         ),
-        floatingActionButton: SizedBox(
-          height: 80,
-          width: 80,
-          child: FittedBox(
-            child: FloatingActionButton(
-              backgroundColor: Colors.transparent,
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: ((context) => const AddDhikrPage())));
-              },
-              child: const Icon(
-                FlutterIslamicIcons.tasbihHand,
-                size: 55,
-              ),
+      ),
+      floatingActionButton: SizedBox(
+        height: 80,
+        width: 80,
+        child: FittedBox(
+          child: FloatingActionButton(
+            backgroundColor: Colors.transparent,
+            onPressed: () {
+              Navigator.of(context).pushNamed(
+                "/add",
+              );
+            },
+            child: const Icon(
+              FlutterIslamicIcons.tasbihHand,
+              size: 55,
             ),
           ),
         ),
@@ -101,13 +97,8 @@ class _HomeScreenState extends State<HomeScreen> {
               final item = arrList[index];
               return GestureDetector(
                 onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: ((context) => DhikrDetailScreen(
-                                dhikrModel: item,
-                                count: item.dhikrCount,
-                              ))));
+                  Navigator.of(context).pushNamed(
+                      "/detail",arguments: DhikrDetailScreenArguments(item, item.dhikrCount));
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -242,13 +233,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: ((context) => DhikrDetailScreen(
-                                  dhikrModel: data,
-                                  count: data.dhikrCount,
-                                ))));
+                    Navigator.pushNamed(
+                        context,"/detail",arguments: DhikrDetailScreenArguments(data, data.dhikrCount));
                   },
                   child: Card(
                     elevation: 10,
