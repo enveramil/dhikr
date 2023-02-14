@@ -1,20 +1,20 @@
-class DhikrModel{
+class DhikrModel {
   final int? id;
   final String? dhikrName;
-  final int dhikrCount;
+  final String? dhikrCount;
   final String? dhikrImame;
   final String? dhikrPronunication;
   final String? dhikrMeaning;
-  final String dateAndTime;
+  final String? dateAndTime;
 
   DhikrModel({
     this.id,
     this.dhikrName,
-    required this.dhikrCount,
+    this.dhikrCount,
     this.dhikrImame,
     this.dhikrPronunication,
     this.dhikrMeaning,
-    required this.dateAndTime,
+    this.dateAndTime,
   });
 
   DhikrModel.fromMap(Map<String, dynamic> res)

@@ -1,49 +1,61 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sleek_circular_slider/sleek_circular_slider.dart';
+import 'package:step_progress_indicator/step_progress_indicator.dart';
+import 'package:zikirmatik_2023/circle_progress.dart';
+import 'package:zikirmatik_2023/views/home_screen.dart';
 
 import '../db_handler.dart';
 import '../model.dart';
 
-class DhikrDetailScreen extends StatefulWidget {
-  DhikrModel dhikrModel;
+class MyWidget extends StatefulWidget {
+  Widget title;
   int count;
-
-  DhikrDetailScreen({super.key, required this.dhikrModel, required this.count});
+  MyWidget({super.key, required this.title, required this.count});
 
   @override
-  State<DhikrDetailScreen> createState() => _DhikrDetailScreenState();
+  State<MyWidget> createState() => _MyWidgetState();
 }
 
-class _DhikrDetailScreenState extends State<DhikrDetailScreen>
-    with TickerProviderStateMixin {
-  DbHelper dbHelper = DbHelper();
+SharedPreferences? pref;
+int dhikrCountPref = pref?.getInt('dhikrCount') ?? 0;
+bool isClick = false;
+
+class _MyWidgetState extends State<MyWidget> with TickerProviderStateMixin {
+  DbHelper? dbHelper;
   late Future<List<DhikrModel>> dataList;
 
-  SharedPreferences? pref;
-  int dhikrCountPref = 0;
-  bool isClick = false;
+  getValues() async {
+    pref = await SharedPreferences.getInstance();
+    setState(() {
+      int count = widget.count;
+      dhikrCountPref = pref?.getInt('dhikrCount') ?? count;
+    });
+  }
 
   @override
   void initState() {
-    dhikrCountPref = pref?.getInt('dhikrCount') ?? 0;
     super.initState();
+    getValues();
   }
 
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(widget.dhikrModel.dhikrName ?? ""),
+          title: widget.title,
           centerTitle: true,
           automaticallyImplyLeading: false,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
+            icon: Icon(Icons.arrow_back),
             onPressed: () {
               Navigator.pop(context);
             },
           ),
           flexibleSpace: Container(
             height: double.infinity,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
                 gradient: LinearGradient(
               begin: Alignment.topRight,
               end: Alignment.bottomLeft,
@@ -56,7 +68,7 @@ class _DhikrDetailScreenState extends State<DhikrDetailScreen>
         ),
         body: Container(
           height: double.infinity,
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
               gradient: LinearGradient(
             begin: Alignment.topRight,
             end: Alignment.bottomLeft,
@@ -67,12 +79,15 @@ class _DhikrDetailScreenState extends State<DhikrDetailScreen>
           )),
           child: Center(
             child: GestureDetector(
-              onTap: () async {
-                int count = --widget.count;
-                if (widget.count >= 0) {
-                  setState(() {});
-                  await dbHelper.update(widget.dhikrModel.id ?? 0, count);
-                }
+              onTap: () {
+                setState(() {
+                  if (widget.count != 0) {
+                    widget.count = dhikrCountPref--;
+                    isClick = true;
+                    pref?.setInt('dhikrCount', dhikrCountPref);
+                    pref?.setBool('isClick', isClick);
+                  }
+                });
               },
               child: Container(
                 width: 300,
@@ -86,8 +101,8 @@ class _DhikrDetailScreenState extends State<DhikrDetailScreen>
                 child: Center(
                   child: Center(
                     child: Text(
-                      "${widget.count}",
-                      style: const TextStyle(fontSize: 30),
+                      isClick == false ? widget.count.toString() : dhikrCountPref.toString(),
+                      style: TextStyle(fontSize: 30),
                     ),
                   ),
                 ),

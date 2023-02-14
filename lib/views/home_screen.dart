@@ -4,7 +4,7 @@ import 'package:lottie/lottie.dart';
 import 'package:zikirmatik_2023/db_handler.dart';
 import 'package:zikirmatik_2023/model.dart';
 import 'package:zikirmatik_2023/views/add_dhikr_page.dart';
-import 'package:zikirmatik_2023/views/dhikr_detail_screen.dart';
+import 'package:zikirmatik_2023/views/new_page.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,20 +14,21 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  DbHelper dbHelper = DbHelper();
-  List<DhikrModel> arrList = [];
+  DbHelper? dbHelper;
+  late Future<List<DhikrModel>> dataList;
+
+  List arrList = ['Esmaül Hüsna', 'La Havle', 'Salavat'];
   bool hey = true;
 
   @override
-  initState() {
+  void initState() {
     super.initState();
+    dbHelper = DbHelper();
     loadData();
   }
 
-  Future<List<DhikrModel>> loadData() async {
-    arrList = await dbHelper.getDataList();
-    setState(() {});
-    return dbHelper.getDataList();
+  loadData() async {
+    dataList = dbHelper!.getDataList();
   }
 
   @override
@@ -48,7 +49,6 @@ class _HomeScreenState extends State<HomeScreen> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                if(arrList.isNotEmpty)
                 _buildBody(),
                 _buildBody2(),
               ],
@@ -62,12 +62,9 @@ class _HomeScreenState extends State<HomeScreen> {
             child: FloatingActionButton(
               backgroundColor: Colors.transparent,
               onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: ((context) => const AddDhikrPage())));
+                Navigator.push(context, MaterialPageRoute(builder: ((context) => AddDhikrPage())));
               },
-              child: const Icon(
+              child: Icon(
                 FlutterIslamicIcons.tasbihHand,
                 size: 55,
               ),
@@ -81,10 +78,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildBody() {
     return Column(
       children: [
-        const SizedBox(
+        SizedBox(
           height: 10,
         ),
-        const Center(
+        Center(
           child: Text(
             'Zikirler',
             style: TextStyle(
@@ -94,37 +91,81 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ),
-        ListView.builder(
-            shrinkWrap: true,
-            itemCount: arrList.length,
-            itemBuilder: (context, index) {
-              final item = arrList[index];
-              return GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: ((context) => DhikrDetailScreen(
-                                dhikrModel: item,
-                                count: item.dhikrCount,
-                              ))));
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Card(
-                    elevation: 10,
-                    child: ListTile(
-                      leading: const Icon(
-                        FlutterIslamicIcons.prayer,
-                        size: 30,
-                      ),
-                      title: Text(item.dhikrName ?? ""),
-                      trailing: const Icon(Icons.arrow_forward),
-                    ),
-                  ),
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: ((context) => MyWidget(
+                          title: text(arrList[0]),
+                          count: 99,
+                        ))));
+          },
+          child: Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Card(
+              elevation: 10,
+              child: ListTile(
+                leading: Icon(
+                  FlutterIslamicIcons.prayer,
+                  size: 30,
                 ),
-              );
-            }),
+                title: text(arrList[0].toString()),
+                trailing: Icon(Icons.arrow_forward),
+              ),
+            ),
+          ),
+        ),
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: ((context) => MyWidget(
+                          title: text(arrList[1]),
+                          count: 99,
+                        ))));
+          },
+          child: Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Card(
+              elevation: 10,
+              child: ListTile(
+                leading: Icon(
+                  FlutterIslamicIcons.prayer,
+                  size: 30,
+                ),
+                title: text(arrList[1]),
+                trailing: Icon(Icons.arrow_forward),
+              ),
+            ),
+          ),
+        ),
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: ((context) => MyWidget(
+                          title: text(arrList[2]),
+                          count: 99,
+                        ))));
+          },
+          child: Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Card(
+              elevation: 10,
+              child: ListTile(
+                leading: Icon(
+                  FlutterIslamicIcons.prayer,
+                  size: 30,
+                ),
+                title: text(arrList[2]),
+                trailing: Icon(Icons.arrow_forward),
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -132,14 +173,14 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildBody2() {
     return Column(
       children: [
-        const SizedBox(
+        SizedBox(
           height: 20,
         ),
         Center(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
-            children: const [
+            children: [
               Expanded(
                   flex: 3,
                   child: Icon(
@@ -177,37 +218,37 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget text(String title) {
+    return Text(
+      title,
+    );
+  }
+
   Widget getTasListView() {
     return FutureBuilder(
-      future: loadData(),
+      future: dataList,
       builder: (context, AsyncSnapshot<List<DhikrModel>> snapshot) {
         if (!snapshot.hasData || snapshot.data == null) {
           return const Center(
             child: CircularProgressIndicator(),
           );
-        } else if (snapshot.data!.isEmpty) {
+        } else if (snapshot.data!.length == 0) {
           return Center(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: GestureDetector(
                 onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: ((context) => const AddDhikrPage())));
+                  Navigator.push(context, MaterialPageRoute(builder: ((context) => AddDhikrPage())));
                 },
                 child: Column(
                   children: [
-                    Lottie.network(
-                        "https://assets4.lottiefiles.com/packages/lf20_xFhzyuFl2E.json",
-                        fit: BoxFit.cover,
-                        width: 160,
-                        repeat: false),
-                    const Text(
+                    Lottie.network("https://assets4.lottiefiles.com/packages/lf20_xFhzyuFl2E.json",
+                        fit: BoxFit.cover, width: 160, repeat: false),
+                    Text(
                       'Zikir bulunamadı',
                       style: TextStyle(fontSize: 20, color: Colors.white),
                     ),
-                    const Text(
+                    Text(
                       'Zikir eklemek için bu alana tıklayabilirsiniz',
                       style: TextStyle(fontSize: 16, color: Colors.white),
                     )
@@ -218,25 +259,31 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         } else {
           return ListView.builder(
-            physics: const ScrollPhysics(),
+            physics: ScrollPhysics(),
             shrinkWrap: true,
             itemCount: snapshot.data?.length,
             itemBuilder: (context, index) {
               int dhikrId = snapshot.data![index].id!.toInt();
-              var data = snapshot.data![index];
+              String dhikrName = snapshot.data![index].dhikrName.toString();
+              String dhikrCount = snapshot.data![index].dhikrCount.toString();
+              String dhikrImame = snapshot.data![index].dhikrImame.toString();
+              String dhikrPronunication = snapshot.data![index].dhikrPronunication.toString();
+              String dhikrMeaning = snapshot.data![index].dhikrMeaning.toString();
+              String dhikrDateAndTime = snapshot.data![index].dateAndTime.toString();
               return Dismissible(
                 key: ValueKey<int>(dhikrId),
                 direction: DismissDirection.endToStart,
                 background: Container(
                   color: Colors.redAccent,
-                  child: const Icon(
+                  child: Icon(
                     Icons.delete_forever,
                     color: Colors.white,
                   ),
                 ),
                 onDismissed: (DismissDirection direction) {
                   setState(() {
-                    dbHelper.delete(dhikrId);
+                    dbHelper!.delete(dhikrId);
+                    dataList = dbHelper!.getDataList();
                     snapshot.data!.remove(snapshot.data![index]);
                   });
                 },
@@ -245,49 +292,50 @@ class _HomeScreenState extends State<HomeScreen> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: ((context) => DhikrDetailScreen(
-                                  dhikrModel: data,
-                                  count: data.dhikrCount,
+                            builder: ((context) => MyWidget(
+                                  title: text(dhikrName),
+                                  count: int.parse(dhikrCount),
                                 ))));
                   },
                   child: Card(
                     elevation: 10,
-                    child: Column(
-                      children: [
-                        ListTile(
-                          contentPadding: const EdgeInsets.all(10),
-                          leading: const Icon(
-                            FlutterIslamicIcons.prayer,
-                            size: 30,
+                    child: Container(
+                      child: Column(
+                        children: [
+                          ListTile(
+                            contentPadding: EdgeInsets.all(10),
+                            leading: Icon(
+                              FlutterIslamicIcons.prayer,
+                              size: 30,
+                            ),
+                            title: Text(dhikrName),
+                            subtitle: Text('Zikir Adet: ${dhikrCount}'),
+                            trailing: Icon(Icons.arrow_forward),
                           ),
-                          title: Text(data.dhikrName ?? ""),
-                          subtitle: Text('Zikir Adet: ${data.dhikrCount}'),
-                          trailing: const Icon(Icons.arrow_forward),
-                        ),
-                        const Divider(
-                          color: Colors.black,
-                          thickness: 0.8,
-                          indent: 10,
-                          endIndent: 10,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 3, horizontal: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Text(
-                                data.dateAndTime,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400,
-                                  fontStyle: FontStyle.italic,
-                                ),
-                              )
-                            ],
+                          Divider(
+                            color: Colors.black,
+                            thickness: 0.8,
+                            indent: 10,
+                            endIndent: 10,
                           ),
-                        ),
-                      ],
+                          Padding(
+                            padding: EdgeInsets.symmetric(vertical: 3, horizontal: 10),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Text(
+                                  dhikrDateAndTime,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400,
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

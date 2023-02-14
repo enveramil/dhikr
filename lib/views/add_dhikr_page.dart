@@ -56,20 +56,16 @@ class _AddDhikrPageState extends State<AddDhikrPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 heightSpacer(10),
-                _buildTextFormField('Zikir Adı', TextInputAction.next,
-                    dhikrNameController, TextInputType.name),
+                _buildTextFormField('Zikir Adı', TextInputAction.next, dhikrNameController, TextInputType.name),
                 heightSpacer(30),
-                _buildTextFormField('Zikir Adet', TextInputAction.next,
-                    dhikrCountController, TextInputType.number),
+                _buildTextFormField('Zikir Adet', TextInputAction.next, dhikrCountController, TextInputType.number),
                 heightSpacer(30),
-                _buildTextFormField('Zikir İmame', TextInputAction.next,
-                    dhikrImameController, TextInputType.number),
+                _buildTextFormField('Zikir İmame', TextInputAction.next, dhikrImameController, TextInputType.number),
                 heightSpacer(30),
-                _buildTextFormField('Zikir Okunuşu', TextInputAction.next,
-                    dhikrPronunciationController, TextInputType.text),
+                _buildTextFormField(
+                    'Zikir Okunuşu', TextInputAction.next, dhikrPronunciationController, TextInputType.text),
                 heightSpacer(30),
-                _buildTextFormField('Zikir Anlamı', TextInputAction.done,
-                    dhikrMeaningController, TextInputType.text),
+                _buildTextFormField('Zikir Anlamı', TextInputAction.done, dhikrMeaningController, TextInputType.text),
                 heightSpacer(30),
                 _buildSaveButton(),
               ],
@@ -80,11 +76,8 @@ class _AddDhikrPageState extends State<AddDhikrPage> {
     );
   }
 
-  Widget _buildTextFormField(
-          String labelText,
-          TextInputAction textInputAction,
-          TextEditingController textEditingController,
-          TextInputType inputType) =>
+  Widget _buildTextFormField(String labelText, TextInputAction textInputAction,
+          TextEditingController textEditingController, TextInputType inputType) =>
       TextFormField(
         keyboardType: inputType,
         controller: textEditingController,
@@ -102,8 +95,7 @@ class _AddDhikrPageState extends State<AddDhikrPage> {
           filled: true,
           //fillColor: Colors.red[50],
           labelText: labelText,
-          labelStyle: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18),
+          labelStyle: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18),
         ),
         validator: (value) {
           if (value!.isEmpty) {
@@ -119,22 +111,17 @@ class _AddDhikrPageState extends State<AddDhikrPage> {
       child: ElevatedButton(
         onPressed: () {
           setState(() {
+            print('Zikir Adı: ${dhikrNameController.text}');
             if (_fromKey.currentState!.validate()) {
-              dbHelper!.insert(
-                DhikrModel(
-                    dhikrName: dhikrNameController.text,
-                    dhikrCount: int.parse(dhikrCountController.text),
-                    dhikrImame: dhikrImameController.text,
-                    dhikrPronunication: dhikrPronunciationController.text,
-                    dhikrMeaning: dhikrMeaningController.text,
-                    dateAndTime: DateFormat('yMd')
-                        .add_jm()
-                        .format(DateTime.now())
-                        .toString()),
-              );
+              dbHelper!.insert(DhikrModel(
+                  dhikrName: dhikrNameController.text,
+                  dhikrCount: dhikrCountController.text,
+                  dhikrImame: dhikrImameController.text,
+                  dhikrPronunication: dhikrPronunciationController.text,
+                  dhikrMeaning: dhikrMeaningController.text,
+                  dateAndTime: DateFormat('yMd').add_jm().format(DateTime.now()).toString()));
 
-              Navigator.push(context,
-                  MaterialPageRoute(builder: ((context) => HomeScreen())));
+              Navigator.push(context, MaterialPageRoute(builder: ((context) => HomeScreen())));
               //Navigator.pop(context);
               dhikrNameController.clear();
               dhikrCountController.clear();
