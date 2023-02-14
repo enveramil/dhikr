@@ -1,61 +1,49 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sleek_circular_slider/sleek_circular_slider.dart';
-import 'package:step_progress_indicator/step_progress_indicator.dart';
-import 'package:zikirmatik_2023/circle_progress.dart';
-import 'package:zikirmatik_2023/views/home_screen.dart';
 
 import '../db_handler.dart';
 import '../model.dart';
 
-class MyWidget extends StatefulWidget {
-  Widget title;
+class DhikrDetailScreen extends StatefulWidget {
+  DhikrModel dhikrModel;
   int count;
-  MyWidget({super.key, required this.title, required this.count});
+
+  DhikrDetailScreen({super.key, required this.dhikrModel, required this.count});
 
   @override
-  State<MyWidget> createState() => _MyWidgetState();
+  State<DhikrDetailScreen> createState() => _DhikrDetailScreenState();
 }
 
-SharedPreferences? pref;
-int dhikrCountPref = pref?.getInt('dhikrCount') ?? 0;
-bool isClick = false;
-
-class _MyWidgetState extends State<MyWidget> with TickerProviderStateMixin {
-  DbHelper? dbHelper;
+class _DhikrDetailScreenState extends State<DhikrDetailScreen>
+    with TickerProviderStateMixin {
+  DbHelper dbHelper = DbHelper();
   late Future<List<DhikrModel>> dataList;
 
-  getValues() async {
-    pref = await SharedPreferences.getInstance();
-    setState(() {
-      int count = widget.count;
-      dhikrCountPref = pref?.getInt('dhikrCount') ?? count;
-    });
-  }
+  SharedPreferences? pref;
+  int dhikrCountPref = 0;
+  bool isClick = false;
 
   @override
   void initState() {
+    dhikrCountPref = pref?.getInt('dhikrCount') ?? 0;
     super.initState();
-    getValues();
   }
 
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: widget.title,
+          title: Text(widget.dhikrModel.dhikrName ?? ""),
           centerTitle: true,
           automaticallyImplyLeading: false,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back),
+            icon: const Icon(Icons.arrow_back),
             onPressed: () {
               Navigator.pop(context);
             },
           ),
           flexibleSpace: Container(
             height: double.infinity,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
                 gradient: LinearGradient(
               begin: Alignment.topRight,
               end: Alignment.bottomLeft,
@@ -68,7 +56,7 @@ class _MyWidgetState extends State<MyWidget> with TickerProviderStateMixin {
         ),
         body: Container(
           height: double.infinity,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
               gradient: LinearGradient(
             begin: Alignment.topRight,
             end: Alignment.bottomLeft,
@@ -79,15 +67,12 @@ class _MyWidgetState extends State<MyWidget> with TickerProviderStateMixin {
           )),
           child: Center(
             child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  if (widget.count != 0) {
-                    widget.count = dhikrCountPref--;
-                    isClick = true;
-                    pref?.setInt('dhikrCount', dhikrCountPref);
-                    pref?.setBool('isClick', isClick);
-                  }
-                });
+              onTap: () async {
+                int count = --widget.count;
+                if (widget.count >= 0) {
+                  setState(() {});
+                  await dbHelper.update(widget.dhikrModel.id ?? 0, count);
+                }
               },
               child: Container(
                 width: 300,
@@ -101,8 +86,8 @@ class _MyWidgetState extends State<MyWidget> with TickerProviderStateMixin {
                 child: Center(
                   child: Center(
                     child: Text(
-                      isClick == false ? widget.count.toString() : dhikrCountPref.toString(),
-                      style: TextStyle(fontSize: 30),
+                      "${widget.count}",
+                      style: const TextStyle(fontSize: 30),
                     ),
                   ),
                 ),
